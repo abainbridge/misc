@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo foo > foo.txt
+echo foo > /home/epcadmin/foo.txt
