@@ -25,16 +25,20 @@ heredoc1
 # Create udp_responder.py
 cat <<'heredoc2' >>/home/epcadmin/udp_responder.py
 import socket
+import sys
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 our_addr = socket.gethostbyname(socket.gethostname())
 port = 2123
 sock.bind((our_addr, port))
 print 'Listening on', our_addr, 'port', port
+sys.stdout.flush()
 while True:
     buf, addr = sock.recvfrom(1024)
     print 'Received:', buf, 'From:', addr
+    sys.stdout.flush()
     sock.sendto('hello from ' + our_addr, addr)
     print 'Sent response'
+    sys.stdout.flush()
 heredoc2
 
 
@@ -43,3 +47,5 @@ crontab -l >ct
 echo '@reboot python2 /home/epcadmin/udp_responder.py >/home/epcadmin/udp_responder.log 2>&1' >>ct
 echo '@reboot date >/home/epcadmin/boot_time.txt' >>ct
 crontab ct
+
+reboot
