@@ -48,4 +48,5 @@ echo '@reboot python2 /home/epcadmin/udp_responder.py >/home/epcadmin/udp_respon
 echo '@reboot date >/home/epcadmin/boot_time.txt' >>ct
 crontab ct
 
-reboot
+
+nohup python2 /home/epcadmin/udp_responder.py >/home/epcadmin/udp_responder.log 2>&1 &
