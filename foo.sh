@@ -42,11 +42,27 @@ while True:
 heredoc2
 
 
-# Add udp_responder.py to crontab
+# Create health probe responder
+cat <<'heredoc3' >>/home/epcadmin/probe_responder.py
+import socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.bind(('', 800))
+sock.listen(5)
+while True:
+    connection, address = sock.accept()
+    print 'Received connection from', address
+    connection.close()
+heredoc3
+
+
+# Add things to crontab
 crontab -l >ct
 echo '@reboot python2 /home/epcadmin/udp_responder.py >/home/epcadmin/udp_responder.log 2>&1' >>ct
+echo '@reboot python2 /home/epcadmin/probe_responder.py >/home/epcadmin/probe_responder.log 2>&1' >>ct
 echo '@reboot date >/home/epcadmin/boot_time.txt' >>ct
 crontab ct
 
 
+# Start services immediately that would otherwise require a reboot before they'd be started by the crontab
 nohup python2 /home/epcadmin/udp_responder.py >/home/epcadmin/udp_responder.log 2>&1 &
+nohup python2 /home/epcadmin/probe_responder.py >/home/epcadmin/probe_responder.log 2>&1 &
