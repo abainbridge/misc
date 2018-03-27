@@ -24,21 +24,27 @@ heredoc1
 
 # Create udp_responder.py
 cat <<'heredoc2' >>/home/epcadmin/udp_responder.py
+import multiprocessing
 import socket
-import sys
+import time
+def gen_cpu_load():
+    print 'Now generating background CPU load.'
+    # Now busy loop to generate CPU load for 5 seconds
+    end_time = time.time() + 5
+    while time.time() < end_time:
+        pass
+    print 'Finished CPU load'
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 our_addr = socket.gethostbyname(socket.gethostname())
 port = 2123
 sock.bind((our_addr, port))
 print 'Listening on', our_addr, 'port', port
-sys.stdout.flush()
 while True:
     buf, addr = sock.recvfrom(1024)
     print 'Received:', buf, 'From:', addr
-    sys.stdout.flush()
     sock.sendto('hello from ' + our_addr, addr)
     print 'Sent response'
-    sys.stdout.flush()
+    multiprocessing.Process(target=gen_cpu_load).start()
 heredoc2
 
 
